@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "551660439778",
+    "project_id": "uppuveli-by-dsk",
+    "storage_bucket": "uppuveli-by-dsk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:551660439778:android:2c17b859035aa4751076bb",
+        "android_client_info": {
+          "package_name": "com.example.uppuveli"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "551660439778-sv3fa4vqhj18c5egcvb5o1775t0ur0jj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uppuveli",
+            "certificate_hash": "8c1b823a67b01343378ca8c0c6e7708272ace513"
+          }
+        },
+        {
+          "client_id": "551660439778-7r98pqgo8lg8v3ujb4ssbuvjp30221b5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVCMw7alHILpurRmlRdWlUdHGkP3-03M0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "551660439778-7r98pqgo8lg8v3ujb4ssbuvjp30221b5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "551660439778-vf6tccfnrh5j7flc34l5g8minbcsk8ri.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.uppuveli"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
