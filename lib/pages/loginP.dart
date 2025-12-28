@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'signupP.dart';
 import 'sociallog.dart'; // <-- SocialConfirmPage file
@@ -387,44 +389,138 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _onAppleLogin() {
-    // Apple Sign-In needs iOS/macOS setup (Xcode capabilities + Apple Developer setup)
-    // For now, this is a demo navigation so your UI flow works.
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SocialConfirmPage(
-          displayName: 'Apple User',
-          email: 'appleuser@icloud.com',
-          providerLabel: 'Signing in with Apple',
-          avatarText: 'AU',
-          providerIconAsset: 'assets/icons/applelogo.png',
-          onUseDifferentAccount: () {
-            Navigator.pop(context);
-          },
+  Future<void> _onAppleLogin() async {
+    try {
+      setState(() => _loadingSocial = true);
+
+      // Check if Apple Sign-In is available on this device
+      final isAvailable = await SignInWithApple.isAvailable();
+
+      if (!isAvailable) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Apple Sign-In not available on this device')),
+        );
+        setState(() => _loadingSocial = false);
+        return;
+      }
+
+      // Get Apple credential
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // Sign in with Firebase using Apple credential
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: credential.identityToken,
+      );
+
+      final userCred = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      final user = userCred.user;
+
+      if (!mounted) return;
+
+      final displayName = user?.displayName ?? credential.givenName ?? 'Apple User';
+      final email = user?.email ?? credential.email ?? 'No email';
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SocialConfirmPage(
+            displayName: displayName,
+            email: email,
+            providerLabel: 'Signing in with Apple',
+            avatarText: _initials(displayName),
+            providerIconAsset: 'assets/icons/applelogo.png',
+            onUseDifferentAccount: () async {
+              await FirebaseAuth.instance.signOut();
+              if (!mounted) return;
+              if (Navigator.canPop(context)) Navigator.pop(context);
+            },
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Apple sign-in failed: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _loadingSocial = false);
+    }
   }
 
-  void _onFacebookLogin() {
-    // TODO: Implement Facebook auth
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SocialConfirmPage(
-          displayName: 'Facebook User',
-          email: 'fbuser@example.com',
-          providerLabel: 'Signing in with Facebook',
-          avatarText: 'FU',
-          providerIconAsset: 'assets/icons/fblogo.png',
+  Future<void> _onFacebookLogin() async {
+    try {
+      setState(() => _loadingSocial = true);
 
-          onUseDifferentAccount: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-    );
+      // Trigger the sign-in flow
+      final LoginResult result = await FacebookAuth.instance.login(
+        permissions: ['email', 'public_profile'],
+      );
+
+      if (result.status == LoginStatus.success) {
+        // Get access token
+        final AccessToken accessToken = result.accessToken!;
+
+        // Sign in with Firebase using Facebook credential
+        final credential = FacebookAuthProvider.credential(accessToken.tokenString);
+
+        final userCred = await FirebaseAuth.instance.signInWithCredential(credential);
+        final user = userCred.user;
+
+        // Also get Facebook user info
+        final userData = await FacebookAuth.instance.getUserData(
+          fields: "email,name,picture",
+        );
+
+        if (!mounted) return;
+
+        final displayName = user?.displayName ?? userData['name'] ?? 'Facebook User';
+        final email = user?.email ?? userData['email'] ?? 'No email';
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SocialConfirmPage(
+              displayName: displayName,
+              email: email,
+              providerLabel: 'Signing in with Facebook',
+              avatarText: _initials(displayName),
+              providerIconAsset: 'assets/icons/fblogo.png',
+              onUseDifferentAccount: () async {
+                await FirebaseAuth.instance.signOut();
+                await FacebookAuth.instance.logOut();
+                if (!mounted) return;
+                if (Navigator.canPop(context)) Navigator.pop(context);
+              },
+            ),
+          ),
+        );
+      } else if (result.status == LoginStatus.cancelled) {
+        // User cancelled the login
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Facebook sign-in cancelled')),
+        );
+      } else {
+        // Error occurred
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Facebook sign-in failed: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Facebook sign-in error: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _loadingSocial = false);
+    }
   }
 
   String _initials(String name) {

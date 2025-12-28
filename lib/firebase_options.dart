@@ -41,48 +41,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyALodPIe9Kv-o4la3_94JrTDWtCnbiuEss',
-    appId: '1:551660439778:web:923b87a2d38939971076bb',
-    messagingSenderId: '551660439778',
-    projectId: 'uppuveli-by-dsk',
-    authDomain: 'uppuveli-by-dsk.firebaseapp.com',
-    storageBucket: 'uppuveli-by-dsk.firebasestorage.app',
-    measurementId: 'G-JS7YGHCQTJ',
+    apiKey: 'AIzaSyD_cS7tVotayOon2KA83oISGqrOk4MX-DY',
+    appId: '1:98005017484:web:012e7a175706a2c4daaca9',
+    messagingSenderId: '98005017484',
+    projectId: 'uppuveli-hotel-app',
+    authDomain: 'uppuveli-hotel-app.firebaseapp.com',
+    storageBucket: 'uppuveli-hotel-app.firebasestorage.app',
+    measurementId: 'G-HOTEL-APP-ID',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCVCMw7alHILpurRmlRdWlUdHGkP3-03M0',
-    appId: '1:551660439778:android:2c17b859035aa4751076bb',
-    messagingSenderId: '551660439778',
-    projectId: 'uppuveli-by-dsk',
-    storageBucket: 'uppuveli-by-dsk.firebasestorage.app',
+    apiKey: 'AIzaSyD_cS7tVotayOon2KA83oISGqrOk4MX-DY',
+    appId: '1:98005017484:android:012e7a175706a2c4daaca9',
+    messagingSenderId: '98005017484',
+    projectId: 'uppuveli-hotel-app',
+    storageBucket: 'uppuveli-hotel-app.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCiVRcvYQIZ5LynJuAGjpOJ72BPHuKTEZ4',
-    appId: '1:551660439778:ios:34c380f7a20afab21076bb',
-    messagingSenderId: '551660439778',
-    projectId: 'uppuveli-by-dsk',
-    storageBucket: 'uppuveli-by-dsk.firebasestorage.app',
+    apiKey: 'AIzaSyD_cS7tVotayOon2KA83oISGqrOk4MX-DY',
+    appId: '1:98005017484:ios:012e7a175706a2c4daaca9',
+    messagingSenderId: '98005017484',
+    projectId: 'uppuveli-hotel-app',
+    storageBucket: 'uppuveli-hotel-app.firebasestorage.app',
     iosBundleId: 'com.example.uppuveli',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCiVRcvYQIZ5LynJuAGjpOJ72BPHuKTEZ4',
-    appId: '1:551660439778:ios:34c380f7a20afab21076bb',
-    messagingSenderId: '551660439778',
-    projectId: 'uppuveli-by-dsk',
-    storageBucket: 'uppuveli-by-dsk.firebasestorage.app',
+    apiKey: 'AIzaSyD_cS7tVotayOon2KA83oISGqrOk4MX-DY',
+    appId: '1:98005017484:ios:012e7a175706a2c4daaca9',
+    messagingSenderId: '98005017484',
+    projectId: 'uppuveli-hotel-app',
+    storageBucket: 'uppuveli-hotel-app.firebasestorage.app',
     iosBundleId: 'com.example.uppuveli',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyALodPIe9Kv-o4la3_94JrTDWtCnbiuEss',
-    appId: '1:551660439778:web:fdd26e7414790ea81076bb',
-    messagingSenderId: '551660439778',
-    projectId: 'uppuveli-by-dsk',
-    authDomain: 'uppuveli-by-dsk.firebaseapp.com',
-    storageBucket: 'uppuveli-by-dsk.firebasestorage.app',
-    measurementId: 'G-711FQ2R2HN',
+    apiKey: 'AIzaSyD_cS7tVotayOon2KA83oISGqrOk4MX-DY',
+    appId: '1:98005017484:web:012e7a175706a2c4daaca9',
+    messagingSenderId: '98005017484',
+    projectId: 'uppuveli-hotel-app',
+    authDomain: 'uppuveli-hotel-app.firebaseapp.com',
+    storageBucket: 'uppuveli-hotel-app.firebasestorage.app',
+    measurementId: 'G-HOTEL-APP-ID',
   );
 }
