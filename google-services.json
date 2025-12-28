@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "98005017484",
+    "project_id": "uppuveli-hotel-app",
+    "storage_bucket": "uppuveli-hotel-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98005017484:android:012e7a175706a2c4daaca9",
+        "android_client_info": {
+          "package_name": "com.example.uppuveli"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98005017484-ngvtat0ntdbt08pumuqpctlrqemq6ma9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uppuveli",
+            "certificate_hash": "2d693e34962cc9148b2e811a531e551bd214bb46"
+          }
+        },
+        {
+          "client_id": "98005017484-qq2vq75oogomdjhfrq841d8s0i4el8hb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_cS7tVotayOon2KA83oISGqrOk4MX-DY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98005017484-qq2vq75oogomdjhfrq841d8s0i4el8hb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
