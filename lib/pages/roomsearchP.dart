@@ -232,7 +232,7 @@ class _RoomSearchPageState extends State<RoomSearchPage> {
               Switch(
                 value: _applyMemberRate,
                 onChanged: (v) => setState(() => _applyMemberRate = v),
-                activeColor: kGold,
+                activeThumbColor: kGold,
               ),
             ],
           ),

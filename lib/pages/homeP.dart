@@ -301,11 +301,11 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               onPressed: null, // ✅ disabled here because InkWell handles tap
               style: ButtonStyle(
-                elevation: MaterialStatePropertyAll(0),
-                backgroundColor: MaterialStatePropertyAll(kGold),
-                foregroundColor: MaterialStatePropertyAll(Colors.white),
-                padding: MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 12, vertical: 10)),
-                shape: MaterialStatePropertyAll(
+                elevation: WidgetStatePropertyAll(0),
+                backgroundColor: WidgetStatePropertyAll(kGold),
+                foregroundColor: WidgetStatePropertyAll(Colors.white),
+                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12, vertical: 10)),
+                shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                 ),
               ),

@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("com.google.gms.google-services")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -27,7 +26,7 @@ android {
         applicationId = "com.example.uppuveli"
 
         // ✅ Google Pay / Stripe requires minSdk 21+
-        minSdk = 21
+        minSdk = flutter.minSdkVersion
 
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
