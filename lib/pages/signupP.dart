@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+// ✅ REMOVED: Direct Firebase import (now using provider)
+// import 'package:firebase_auth/firebase_auth.dart';
 
 import 'homeP.dart'; // ✅ change this import to your actual GuestHomePage file
+import '../core/providers/auth_provider.dart'; // ✅ ADDED: Import auth provider
 
-class SignUpPage extends StatefulWidget {
+// ✅ MIGRATED: Changed from StatefulWidget to ConsumerStatefulWidget
+class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  ConsumerState<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+// ✅ MIGRATED: Changed from State to ConsumerState
+class _SignUpPageState extends ConsumerState<SignUpPage> {
   static const Color kGold = Color(0xFFC9A633);
 
   final _firstName = TextEditingController();
@@ -26,7 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _acceptTerms = false;
   bool _optInOffers = false;
 
-  bool _loading = false;
+  // ✅ REMOVED: _loading - now using authProvider.isLoading
 
   String _countryCode = '+94';
 
@@ -77,6 +82,33 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ ADDED: Listen to auth state changes for navigation and error handling
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      // Handle errors
+      if (next.error != null && previous?.error != next.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!)),
+        );
+      }
+
+      // Handle successful signup - navigate to home
+      if (next.isAuthenticated && next.user != null && previous?.isAuthenticated != true) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomePage(
+              displayName: next.displayName,
+              isGuest: false,
+              initialTabIndex: 0,
+            ),
+          ),
+        );
+      }
+    });
+
+    // ✅ ADDED: Watch auth state for loading indicator
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F8F3),
       body: SafeArea(
@@ -125,8 +157,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     const SizedBox(height: 24),
 
-                    // Form Card
-                    _buildCardForm(),
+                    // Form Card - ✅ CHANGED: Pass authState for loading state
+                    _buildCardForm(authState),
                   ],
                 ),
               ),
@@ -137,7 +169,8 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _buildCardForm() {
+  // ✅ CHANGED: Added authState parameter to access loading state
+  Widget _buildCardForm(AuthState authState) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -341,8 +374,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 elevation: 0,
               ),
-              onPressed: _loading ? null : _onCreateAccount,
-              child: _loading
+              // ✅ CHANGED: Use provider loading state instead of local _loading
+              onPressed: authState.isLoading ? null : _onCreateAccount,
+              child: authState.isLoading
                   ? const SizedBox(
                       height: 20,
                       width: 20,
@@ -384,15 +418,16 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   // ---------------------------------------------------------------------------
-  // Actions (Firebase)
+  // Actions - ✅ MIGRATED: Now using authProvider instead of direct Firebase calls
   // ---------------------------------------------------------------------------
 
   void _onTermsTap() {
     // TODO: open terms page or web link
   }
 
+  // ✅ MIGRATED: Replaced Firebase call with provider method
   Future<void> _onCreateAccount() async {
-    // ✅ Validate all required fields
+    // ✅ KEPT: Form validation logic (UI-specific)
     final first = _firstName.text.trim();
     final last = _lastName.text.trim();
     final email = _email.text.trim();
@@ -425,37 +460,20 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    try {
-      setState(() => _loading = true);
+    // ✅ CHANGED: Use auth provider instead of direct Firebase call
+    final authNotifier = ref.read(authProvider.notifier);
+    final displayName = '$first $last'.trim();
 
-      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: pass,
-      );
+    await authNotifier.signUpWithEmail(
+      email: email,
+      password: pass,
+      displayName: displayName,
+    );
 
-      final displayName = '$first $last'.trim();
-      await cred.user?.updateDisplayName(displayName);
-
-      if (!mounted) return;
-
-      // ✅ Navigate to Home (GuestHomePage)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomePage(
-            displayName: displayName.isEmpty ? 'DSK GUEST' : displayName,
-            isGuest: false,
-            initialTabIndex: 0,
-          ),
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      _toast(e.message ?? 'Sign up failed');
-    } catch (e) {
-      _toast('Sign up failed: $e');
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+    // ✅ REMOVED: Manual navigation and error handling - now handled by ref.listen
+    // Navigation happens automatically when isAuthenticated becomes true
+    // Errors are shown automatically via ref.listen
+    // Display name update is handled by the provider
   }
 
   void _toast(String msg) {

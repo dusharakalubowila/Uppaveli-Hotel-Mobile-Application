@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+// ✅ REMOVED: Direct Firebase imports (now using provider)
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'signupP.dart';
-import 'sociallog.dart'; // <-- SocialConfirmPage file
 import 'homeP.dart'; // ✅ make sure this file name matches your GuestHomePage file
+import '../core/providers/auth_provider.dart'; // ✅ ADDED: Import auth provider
 
-class LoginPage extends StatefulWidget {
+// ✅ MIGRATED: Changed from StatefulWidget to ConsumerStatefulWidget
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+// ✅ MIGRATED: Changed from State to ConsumerState
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _rememberMe = false;
-  bool _loadingSocial = false;
+  // ✅ REMOVED: _loadingSocial - now using authProvider.isLoading
 
   static const Color kGold = Color(0xFFC9A633);
 
@@ -35,6 +38,33 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ ADDED: Listen to auth state changes for navigation and error handling
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      // Handle errors
+      if (next.error != null && previous?.error != next.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!)),
+        );
+      }
+
+      // Handle successful authentication - navigate to home
+      if (next.isAuthenticated && next.user != null && previous?.isAuthenticated != true) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomePage(
+              displayName: next.displayName,
+              isGuest: false,
+              initialTabIndex: 0,
+            ),
+          ),
+        );
+      }
+    });
+
+    // ✅ ADDED: Watch auth state for loading indicator
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F8F3),
       body: SafeArea(
@@ -76,13 +106,14 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 32),
 
-                    _buildLoginCard(),
+                    _buildLoginCard(authState),
 
                     const SizedBox(height: 24),
 
-                    _buildSocialLogin(),
+                    _buildSocialLogin(authState),
 
-                    if (_loadingSocial) ...[
+                    // ✅ CHANGED: Use provider loading state instead of local _loadingSocial
+                    if (authState.isLoading) ...[
                       const SizedBox(height: 18),
                       const CircularProgressIndicator(),
                     ],
@@ -96,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildLoginCard() {
+  // ✅ CHANGED: Added authState parameter to access loading state
+  Widget _buildLoginCard(AuthState authState) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -166,11 +198,21 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: _onEmailLogin,
-              child: const Text(
-                'Sign In',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
+              // ✅ CHANGED: Disable button when loading (from provider)
+              onPressed: authState.isLoading ? null : _onEmailLogin,
+              child: authState.isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text(
+                      'Sign In',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
             ),
           ),
 
@@ -178,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
 
           Center(
             child: TextButton(
-              onPressed: _onForgotPassword,
+              onPressed: authState.isLoading ? null : _onForgotPassword,
               child: const Text(
                 'Forgot Password?',
                 style: TextStyle(color: kGold),
@@ -203,7 +245,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildSocialLogin() {
+  // ✅ CHANGED: Added authState parameter
+  Widget _buildSocialLogin(AuthState authState) {
     return Column(
       children: [
         const Text(
@@ -214,21 +257,34 @@ class _LoginPageState extends State<LoginPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _socialButton('assets/icons/googlelogo.png', _onGoogleLogin),
+            _socialButton(
+              'assets/icons/googlelogo.png',
+              _onGoogleLogin,
+              authState.isLoading,
+            ),
             const SizedBox(width: 16),
-            _socialButton('assets/icons/applelogo.png', _onAppleLogin),
+            _socialButton(
+              'assets/icons/applelogo.png',
+              _onAppleLogin,
+              authState.isLoading,
+            ),
             const SizedBox(width: 16),
-            _socialButton('assets/icons/fblogo.png', _onFacebookLogin),
+            _socialButton(
+              'assets/icons/fblogo.png',
+              _onFacebookLogin,
+              authState.isLoading,
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _socialButton(String icon, VoidCallback onTap) {
+  // ✅ CHANGED: Added isLoading parameter instead of using local _loadingSocial
+  Widget _socialButton(String icon, VoidCallback onTap, bool isLoading) {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
-      onTap: _loadingSocial ? null : onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         height: 54,
         width: 54,
@@ -259,7 +315,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // ---------------------------------------------------------------------------
-  // ACTIONS
+  // ACTIONS - ✅ MIGRATED: Now using authProvider instead of direct Firebase calls
   // ---------------------------------------------------------------------------
 
   void _goToSignUp() {
@@ -269,6 +325,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // ✅ MIGRATED: Replaced Firebase call with provider method
   Future<void> _onEmailLogin() async {
     final email = _emailController.text.trim();
     final pass = _passwordController.text.trim();
@@ -280,253 +337,69 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    try {
-      final userCred = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: pass,
-      );
+    // ✅ CHANGED: Use auth provider instead of direct Firebase call
+    final authNotifier = ref.read(authProvider.notifier);
+    await authNotifier.signInWithEmail(
+      email: email,
+      password: pass,
+    );
 
-      final user = userCred.user;
-      if (user == null || !mounted) return;
+    // ✅ REMOVED: Manual navigation and error handling - now handled by ref.listen
+    // Navigation happens automatically when isAuthenticated becomes true
+    // Errors are shown automatically via ref.listen
+  }
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomePage(
-            displayName: user.displayName ?? user.email ?? 'User',
-            isGuest: false,
-            initialTabIndex: 0,
-          ),
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      String msg = 'Login failed';
-      if (e.code == 'user-not-found') msg = 'No account found for that email.';
-      if (e.code == 'wrong-password') msg = 'Wrong password.';
-      if (e.code == 'invalid-email') msg = 'Invalid email.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-    } catch (e) {
+  // ✅ IMPLEMENTED: Forgot password using provider
+  Future<void> _onForgotPassword() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
+        const SnackBar(content: Text('Please enter your email address')),
+      );
+      return;
+    }
+
+    // ✅ CHANGED: Use auth provider method
+    final authNotifier = ref.read(authProvider.notifier);
+    await authNotifier.sendPasswordResetEmail(email);
+
+    // Show success message
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password reset email sent. Please check your inbox.'),
+        ),
       );
     }
   }
 
-  void _onForgotPassword() {
-    // TODO: Firebase reset password
-  }
-
+  // ✅ MIGRATED: Replaced Google sign-in with provider method
   Future<void> _onGoogleLogin() async {
-    try {
-      setState(() => _loadingSocial = true);
+    // ✅ CHANGED: Use auth provider instead of direct Firebase/GoogleSignIn calls
+    final authNotifier = ref.read(authProvider.notifier);
+    await authNotifier.signInWithGoogle();
 
-      UserCredential userCred;
-
-      if (kIsWeb) {
-        // ✅ WEB Google login (Popup)
-        final googleProvider = GoogleAuthProvider()
-          ..addScope('email')
-          ..addScope('profile');
-
-        userCred = await FirebaseAuth.instance.signInWithPopup(googleProvider);
-      } else {
-        // ✅ ANDROID/iOS Google login (google_sign_in)
-        final googleUser = await GoogleSignIn().signIn();
-        if (googleUser == null) {
-          // user canceled
-          setState(() => _loadingSocial = false);
-          return;
-        }
-
-        final googleAuth = await googleUser.authentication;
-
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        userCred = await FirebaseAuth.instance.signInWithCredential(credential);
-      }
-
-      final user = userCred.user;
-
-      if (!mounted) return;
-
-      final displayName = user?.displayName ?? 'Guest';
-      final email = user?.email ?? 'No email';
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SocialConfirmPage(
-            displayName: displayName,
-            email: email,
-            providerLabel: 'Signing in with Google',
-            avatarText: _initials(displayName),
-            providerIconAsset: 'assets/icons/googlelogo.png',
-            onUseDifferentAccount: () async {
-              // Sign out from Firebase
-              await FirebaseAuth.instance.signOut();
-
-              // Also sign out from Google session (mobile)
-              if (!kIsWeb) {
-                await GoogleSignIn().signOut();
-              }
-
-              if (!mounted) return;
-              if (Navigator.canPop(context)) Navigator.pop(context);
-            },
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google sign-in failed: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _loadingSocial = false);
-    }
+    // ✅ REMOVED: Manual navigation - handled by ref.listen
+    // For social logins that go to SocialConfirmPage, we'll handle that separately
+    // if needed, or let the provider handle it
   }
 
+  // ✅ MIGRATED: Replaced Apple sign-in with provider method
   Future<void> _onAppleLogin() async {
-    try {
-      setState(() => _loadingSocial = true);
+    // ✅ CHANGED: Use auth provider instead of direct Firebase/Apple calls
+    final authNotifier = ref.read(authProvider.notifier);
+    await authNotifier.signInWithApple();
 
-      // Check if Apple Sign-In is available on this device
-      final isAvailable = await SignInWithApple.isAvailable();
-
-      if (!isAvailable) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Apple Sign-In not available on this device')),
-        );
-        setState(() => _loadingSocial = false);
-        return;
-      }
-
-      // Get Apple credential
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      // Sign in with Firebase using Apple credential
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: credential.identityToken,
-      );
-
-      final userCred = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      final user = userCred.user;
-
-      if (!mounted) return;
-
-      final displayName = user?.displayName ?? credential.givenName ?? 'Apple User';
-      final email = user?.email ?? credential.email ?? 'No email';
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SocialConfirmPage(
-            displayName: displayName,
-            email: email,
-            providerLabel: 'Signing in with Apple',
-            avatarText: _initials(displayName),
-            providerIconAsset: 'assets/icons/applelogo.png',
-            onUseDifferentAccount: () async {
-              await FirebaseAuth.instance.signOut();
-              if (!mounted) return;
-              if (Navigator.canPop(context)) Navigator.pop(context);
-            },
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Apple sign-in failed: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _loadingSocial = false);
-    }
+    // ✅ REMOVED: Manual navigation - handled by ref.listen
   }
 
+  // ✅ MIGRATED: Replaced Facebook sign-in with provider method
   Future<void> _onFacebookLogin() async {
-    try {
-      setState(() => _loadingSocial = true);
+    // ✅ CHANGED: Use auth provider instead of direct Firebase/Facebook calls
+    final authNotifier = ref.read(authProvider.notifier);
+    await authNotifier.signInWithFacebook();
 
-      // Trigger the sign-in flow
-      final LoginResult result = await FacebookAuth.instance.login(
-        permissions: ['email', 'public_profile'],
-      );
-
-      if (result.status == LoginStatus.success) {
-        // Get access token
-        final AccessToken accessToken = result.accessToken!;
-
-        // Sign in with Firebase using Facebook credential
-        final credential = FacebookAuthProvider.credential(accessToken.tokenString);
-
-        final userCred = await FirebaseAuth.instance.signInWithCredential(credential);
-        final user = userCred.user;
-
-        // Also get Facebook user info
-        final userData = await FacebookAuth.instance.getUserData(
-          fields: "email,name,picture",
-        );
-
-        if (!mounted) return;
-
-        final displayName = user?.displayName ?? userData['name'] ?? 'Facebook User';
-        final email = user?.email ?? userData['email'] ?? 'No email';
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => SocialConfirmPage(
-              displayName: displayName,
-              email: email,
-              providerLabel: 'Signing in with Facebook',
-              avatarText: _initials(displayName),
-              providerIconAsset: 'assets/icons/fblogo.png',
-              onUseDifferentAccount: () async {
-                await FirebaseAuth.instance.signOut();
-                await FacebookAuth.instance.logOut();
-                if (!mounted) return;
-                if (Navigator.canPop(context)) Navigator.pop(context);
-              },
-            ),
-          ),
-        );
-      } else if (result.status == LoginStatus.cancelled) {
-        // User cancelled the login
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Facebook sign-in cancelled')),
-        );
-      } else {
-        // Error occurred
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Facebook sign-in failed: ${result.message}')),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Facebook sign-in error: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _loadingSocial = false);
-    }
-  }
-
-  String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
-    if (parts.isEmpty) return 'GU';
-    if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
-    return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
+    // ✅ REMOVED: Manual navigation - handled by ref.listen
   }
 }
