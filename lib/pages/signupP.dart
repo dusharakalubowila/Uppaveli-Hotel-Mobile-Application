@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-// ✅ REMOVED: Direct Firebase import (now using provider)
-// import 'package:firebase_auth/firebase_auth.dart';
+// ✅ TEMPORARILY DISABLED: Auth imports removed for UI development
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import '../core/providers/auth_provider.dart';
 
-import 'homeP.dart'; // ✅ change this import to your actual GuestHomePage file
-import '../core/providers/auth_provider.dart'; // ✅ ADDED: Import auth provider
+import 'homeP.dart';
 
-// ✅ MIGRATED: Changed from StatefulWidget to ConsumerStatefulWidget
-class SignUpPage extends ConsumerStatefulWidget {
+// ✅ TEMPORARILY CHANGED: Back to StatefulWidget (no auth needed)
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
   @override
-  ConsumerState<SignUpPage> createState() => _SignUpPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-// ✅ MIGRATED: Changed from State to ConsumerState
-class _SignUpPageState extends ConsumerState<SignUpPage> {
+// ✅ TEMPORARILY CHANGED: Back to State (no auth needed)
+class _SignUpPageState extends State<SignUpPage> {
   static const Color kGold = Color(0xFFC9A633);
 
   final _firstName = TextEditingController();
@@ -82,32 +81,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ ADDED: Listen to auth state changes for navigation and error handling
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      // Handle errors
-      if (next.error != null && previous?.error != next.error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!)),
-        );
-      }
-
-      // Handle successful signup - navigate to home
-      if (next.isAuthenticated && next.user != null && previous?.isAuthenticated != true) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => HomePage(
-              displayName: next.displayName,
-              isGuest: false,
-              initialTabIndex: 0,
-            ),
-          ),
-        );
-      }
-    });
-
-    // ✅ ADDED: Watch auth state for loading indicator
-    final authState = ref.watch(authProvider);
+    // ✅ TEMPORARILY DISABLED: Auth logic disabled for UI development
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F8F3),
@@ -157,8 +131,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
                     const SizedBox(height: 24),
 
-                    // Form Card - ✅ CHANGED: Pass authState for loading state
-                    _buildCardForm(authState),
+                    // Form Card - ✅ TEMPORARILY DISABLED: No auth state needed
+                    _buildCardForm(),
                   ],
                 ),
               ),
@@ -169,8 +143,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     );
   }
 
-  // ✅ CHANGED: Added authState parameter to access loading state
-  Widget _buildCardForm(AuthState authState) {
+  // ✅ TEMPORARILY DISABLED: No auth state needed
+  Widget _buildCardForm() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -374,18 +348,12 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 ),
                 elevation: 0,
               ),
-              // ✅ CHANGED: Use provider loading state instead of local _loading
-              onPressed: authState.isLoading ? null : _onCreateAccount,
-              child: authState.isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text(
-                      'Create Account',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
+              // ✅ TEMPORARILY DISABLED: Just navigate to home
+              onPressed: _onCreateAccount,
+              child: const Text(
+                'Create Account',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -425,60 +393,25 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     // TODO: open terms page or web link
   }
 
-  // ✅ MIGRATED: Replaced Firebase call with provider method
+  // ✅ TEMPORARILY DISABLED: Just navigate to home for UI development
   Future<void> _onCreateAccount() async {
-    // ✅ KEPT: Form validation logic (UI-specific)
+    // Skip authentication - just go to home
     final first = _firstName.text.trim();
     final last = _lastName.text.trim();
-    final email = _email.text.trim();
-    final phone = _phone.text.trim();
-    final pass = _password.text;
-    final confirm = _confirmPassword.text;
-
-    if (first.isEmpty ||
-        last.isEmpty ||
-        email.isEmpty ||
-        phone.isEmpty ||
-        pass.isEmpty ||
-        confirm.isEmpty) {
-      _toast('Please fill all required fields (*)');
-      return;
-    }
-
-    if (!_acceptTerms) {
-      _toast('Please accept the terms & conditions');
-      return;
-    }
-
-    if (pass.length < 6) {
-      _toast('Password must be at least 6 characters');
-      return;
-    }
-
-    if (pass != confirm) {
-      _toast('Passwords do not match');
-      return;
-    }
-
-    // ✅ CHANGED: Use auth provider instead of direct Firebase call
-    final authNotifier = ref.read(authProvider.notifier);
-    final displayName = '$first $last'.trim();
-
-    await authNotifier.signUpWithEmail(
-      email: email,
-      password: pass,
-      displayName: displayName,
+    final displayName = '$first $last'.trim().isEmpty ? 'User' : '$first $last'.trim();
+    
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HomePage(
+          displayName: displayName,
+          isGuest: false,
+          initialTabIndex: 0,
+        ),
+      ),
     );
-
-    // ✅ REMOVED: Manual navigation and error handling - now handled by ref.listen
-    // Navigation happens automatically when isAuthenticated becomes true
-    // Errors are shown automatically via ref.listen
-    // Display name update is handled by the provider
   }
 
-  void _toast(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
 }
 
 // ===================== Helper Model =====================

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'spabookP.dart';
+import 'spaServiceDetailP.dart';
 
 class SpaWellnessPage extends StatefulWidget {
   const SpaWellnessPage({super.key});
@@ -320,21 +320,29 @@ class _SpaWellnessPageState extends State<SpaWellnessPage>
 
                 const SizedBox(height: 12),
 
-                // ✅ NAVIGATION INSTEAD OF DIALOG
+                // ✅ NAVIGATION TO DETAIL PAGE
                 SizedBox(
                   width: double.infinity,
                   height: 44,
                   child: ElevatedButton(
                     onPressed: () {
+                      // Map service title to service ID
+                      final serviceIdMap = {
+                        'Signature Ayurvedic Massage': 'signature-ayurvedic',
+                        'Ocean Breeze Facial': 'ocean-breeze-facial',
+                        'Coconut Body Scrub': 'coconut-body-scrub',
+                        'Deep Tissue Therapy': 'deep-tissue-therapy',
+                        'Sunset Wellness Package': 'sunset-wellness-package',
+                        'Tropical Glow Facial': 'ocean-breeze-facial', // Use same as Ocean Breeze
+                        'Hot Stone Massage': 'signature-ayurvedic', // Use same as Ayurvedic
+                        'Seaweed Body Wrap': 'coconut-body-scrub', // Use same as Body Scrub
+                      };
+                      final serviceId = serviceIdMap[s.title] ?? 'signature-ayurvedic';
+                      
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => SpaBookingPage(
-                            treatmentName: s.title,
-                            minutes: s.minutes,
-                            price: s.price,
-                            imageAsset: s.imageAsset,
-                          ),
+                          builder: (_) => SpaServiceDetailPage(serviceId: serviceId),
                         ),
                       );
                     },

@@ -182,3 +182,4 @@ await authService.signInWithEmailAndPassword(
 **Next Action:** Run `flutter pub run build_runner build --delete-conflicting-outputs`
 
 
+

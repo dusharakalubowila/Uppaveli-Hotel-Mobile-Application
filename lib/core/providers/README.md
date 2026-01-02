@@ -93,3 +93,4 @@ bookingNotifier.updateSearch(
 4. Replace StatefulWidget with ConsumerWidget where appropriate
 
 
+
