@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// ✅ TEMPORARILY DISABLED: Auth imports removed for UI development
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import '../core/providers/auth_provider.dart';
 
-import 'homeP.dart'; // ✅ change this import to your actual GuestHomePage file
+import 'homeP.dart';
 
+// ✅ TEMPORARILY CHANGED: Back to StatefulWidget (no auth needed)
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
@@ -10,6 +13,7 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
+// ✅ TEMPORARILY CHANGED: Back to State (no auth needed)
 class _SignUpPageState extends State<SignUpPage> {
   static const Color kGold = Color(0xFFC9A633);
 
@@ -26,7 +30,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _acceptTerms = false;
   bool _optInOffers = false;
 
-  bool _loading = false;
+  // ✅ REMOVED: _loading - now using authProvider.isLoading
 
   String _countryCode = '+94';
 
@@ -77,6 +81,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ TEMPORARILY DISABLED: Auth logic disabled for UI development
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F8F3),
       body: SafeArea(
@@ -125,7 +131,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     const SizedBox(height: 24),
 
-                    // Form Card
+                    // Form Card - ✅ TEMPORARILY DISABLED: No auth state needed
                     _buildCardForm(),
                   ],
                 ),
@@ -137,6 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+  // ✅ TEMPORARILY DISABLED: No auth state needed
   Widget _buildCardForm() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -341,17 +348,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 elevation: 0,
               ),
-              onPressed: _loading ? null : _onCreateAccount,
-              child: _loading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text(
-                      'Create Account',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
+              // ✅ TEMPORARILY DISABLED: Just navigate to home
+              onPressed: _onCreateAccount,
+              child: const Text(
+                'Create Account',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -384,83 +386,32 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   // ---------------------------------------------------------------------------
-  // Actions (Firebase)
+  // Actions - ✅ MIGRATED: Now using authProvider instead of direct Firebase calls
   // ---------------------------------------------------------------------------
 
   void _onTermsTap() {
     // TODO: open terms page or web link
   }
 
+  // ✅ TEMPORARILY DISABLED: Just navigate to home for UI development
   Future<void> _onCreateAccount() async {
-    // ✅ Validate all required fields
+    // Skip authentication - just go to home
     final first = _firstName.text.trim();
     final last = _lastName.text.trim();
-    final email = _email.text.trim();
-    final phone = _phone.text.trim();
-    final pass = _password.text;
-    final confirm = _confirmPassword.text;
-
-    if (first.isEmpty ||
-        last.isEmpty ||
-        email.isEmpty ||
-        phone.isEmpty ||
-        pass.isEmpty ||
-        confirm.isEmpty) {
-      _toast('Please fill all required fields (*)');
-      return;
-    }
-
-    if (!_acceptTerms) {
-      _toast('Please accept the terms & conditions');
-      return;
-    }
-
-    if (pass.length < 6) {
-      _toast('Password must be at least 6 characters');
-      return;
-    }
-
-    if (pass != confirm) {
-      _toast('Passwords do not match');
-      return;
-    }
-
-    try {
-      setState(() => _loading = true);
-
-      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: pass,
-      );
-
-      final displayName = '$first $last'.trim();
-      await cred.user?.updateDisplayName(displayName);
-
-      if (!mounted) return;
-
-      // ✅ Navigate to Home (GuestHomePage)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomePage(
-            displayName: displayName.isEmpty ? 'DSK GUEST' : displayName,
-            isGuest: false,
-            initialTabIndex: 0,
-          ),
+    final displayName = '$first $last'.trim().isEmpty ? 'User' : '$first $last'.trim();
+    
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HomePage(
+          displayName: displayName,
+          isGuest: false,
+          initialTabIndex: 0,
         ),
-      );
-    } on FirebaseAuthException catch (e) {
-      _toast(e.message ?? 'Sign up failed');
-    } catch (e) {
-      _toast('Sign up failed: $e');
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+      ),
+    );
   }
 
-  void _toast(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
 }
 
 // ===================== Helper Model =====================

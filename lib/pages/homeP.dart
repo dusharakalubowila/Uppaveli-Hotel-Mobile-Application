@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'roomsearchP.dart'; // ✅ ADD: make sure file name + class name match your page
 import 'spaWellP.dart'; // ✅ ADD: make sure file name + class name match your spa page
 import 'checkinP.dart'; // ✅ ADD: make sure file name + class name match your check-in page
+import 'facilityDetailP.dart'; // ✅ Facility detail pages
+import 'activityDetailP.dart'; // ✅ Activity detail pages
+import 'allRoomsP.dart'; // ✅ All Rooms page
+import 'allActivitiesP.dart'; // ✅ All Activities page
+import '../core/widgets/bottom_nav_bar.dart'; // ✅ Shared bottom nav
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -39,23 +44,34 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // ✅ Hotel Facilities
+  // ✅ Hotel Facilities - Updated to match design
   final List<_FacilityItem> _roomTypes = const [
-    _FacilityItem(title: 'Deluxe Room', icon: Icons.apartment_outlined),
-    _FacilityItem(title: 'Standard\nRoom', icon: Icons.bed_outlined),
-    _FacilityItem(title: 'Beach Suite', icon: Icons.waves_outlined),
-    _FacilityItem(title: 'Ocean Villa', icon: Icons.home_outlined),
-    _FacilityItem(title: 'Family Suite', icon: Icons.family_restroom_outlined),
-    _FacilityItem(title: 'Restaurant', icon: Icons.restaurant_outlined),
-
-    // ✅ Spa navigates to SpaWellnessPage
+    _FacilityItem(
+      title: 'Thendral Bliss',
+      icon: Icons.local_florist,
+      facilityId: 'fac-004', // Thendral Bliss Spa
+    ),
+    _FacilityItem(
+      title: 'Swimming Pool',
+      icon: Icons.pool,
+      facilityId: 'fac-001', // Beach Front Swimming Pool
+    ),
+    _FacilityItem(
+      title: 'GYM',
+      icon: Icons.fitness_center,
+      facilityId: 'fac-002', // GYM
+    ),
+    _FacilityItem(
+      title: 'Pool Bar',
+      icon: Icons.local_bar,
+      facilityId: 'fac-003', // Beach Club
+    ),
+    // Keep Spa for navigation if needed
     _FacilityItem(
       title: 'Spa',
       icon: Icons.spa_outlined,
       onTapKey: _FacilityAction.spa,
     ),
-
-    _FacilityItem(title: 'More', icon: Icons.more_horiz),
   ];
 
   // ✅ Recommendation cards:
@@ -92,10 +108,30 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final List<_ExperienceItem> _experiences = const [
-    _ExperienceItem(title: 'Snorkeling at Pigeon\nIsland', tag: 'Snorkeling'),
-    _ExperienceItem(title: 'Cultural Tour –\nKoneswaram Temple', tag: 'Cultural Tour'),
-    _ExperienceItem(title: 'Whale Watching', tag: 'Adventure'),
-    _ExperienceItem(title: 'Sunset Beach BBQ', tag: 'Dining'),
+    _ExperienceItem(
+      title: 'Snorkeling at Pigeon\nIsland',
+      tag: 'Snorkeling',
+      activityId: 'snorkeling',
+      imageUrl: 'assets/images/beach.png',
+    ),
+    _ExperienceItem(
+      title: 'Cultural Tour –\nKoneswaram Temple',
+      tag: 'Cultural Tour',
+      activityId: 'cultural-tour',
+      imageUrl: 'assets/images/room.png',
+    ),
+    _ExperienceItem(
+      title: 'Whale Watching',
+      tag: 'Adventure',
+      activityId: 'whale-watching',
+      imageUrl: 'assets/images/garden.png',
+    ),
+    _ExperienceItem(
+      title: 'Sunset Beach BBQ',
+      tag: 'Dining',
+      activityId: 'sunset-bbq',
+      imageUrl: 'assets/images/breeze.png',
+    ),
   ];
 
   @override
@@ -127,7 +163,12 @@ class _HomePageState extends State<HomePage> {
                     _sectionHeader(
                       title: 'Hotel Facilities',
                       actionText: 'See All',
-                      onAction: () => debugPrint('See All facilities tapped'),
+                      onAction: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SpaWellnessPage()),
+                        );
+                      },
                     ),
                     const SizedBox(height: 10),
                     _facilityRow(_roomTypes),
@@ -136,7 +177,14 @@ class _HomePageState extends State<HomePage> {
                     _sectionHeader(
                       title: 'Recommendation',
                       actionText: 'View All',
-                      onAction: () => debugPrint('View All recommendations tapped'),
+                      onAction: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AllRoomsPage(),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 10),
                     _recommendationRow(),
@@ -145,7 +193,14 @@ class _HomePageState extends State<HomePage> {
                     _sectionHeader(
                       title: 'Popular Experiences',
                       actionText: 'Explore',
-                      onAction: () => debugPrint('Explore experiences tapped'),
+                      onAction: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AllActivitiesPage(),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 10),
                     _experienceGrid(),
@@ -157,7 +212,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: _bottomNav(),
+      bottomNavigationBar: BottomNavBar(activeIndex: _navIndex),
     );
   }
 
@@ -371,6 +426,18 @@ class _HomePageState extends State<HomePage> {
 
   // ✅ handle facility actions (Spa navigation here)
   void _handleFacilityTap(_FacilityItem item) {
+    // Navigate to facility detail page if facilityId is provided (check this first)
+    if (item.facilityId != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FacilityDetailPage(facilityId: item.facilityId!),
+        ),
+      );
+      return;
+    }
+
+    // Navigate to spa page if onTapKey is spa
     if (item.onTapKey == _FacilityAction.spa) {
       Navigator.push(
         context,
@@ -454,42 +521,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _bottomNav() {
-    return Container(
-      height: 74,
-      color: kGold,
-      padding: const EdgeInsets.only(bottom: 6, top: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _NavItem(
-            label: 'Home',
-            icon: Icons.home_outlined,
-            isActive: _navIndex == 0,
-            onTap: () => setState(() => _navIndex = 0),
-          ),
-          _NavItem(
-            label: 'Explore',
-            icon: Icons.search_outlined,
-            isActive: _navIndex == 1,
-            onTap: () => setState(() => _navIndex = 1),
-          ),
-          _NavItem(
-            label: 'Bookmark',
-            icon: Icons.favorite_border,
-            isActive: _navIndex == 2,
-            onTap: () => setState(() => _navIndex = 2),
-          ),
-          _NavItem(
-            label: 'Profile',
-            icon: Icons.person_outline,
-            isActive: _navIndex == 3,
-            onTap: () => setState(() => _navIndex = 3),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -503,11 +534,13 @@ class _FacilityItem {
 
   // ✅ action key for navigation
   final _FacilityAction? onTapKey;
+  final String? facilityId; // For navigating to facility detail pages
 
   const _FacilityItem({
     required this.title,
     required this.icon,
     this.onTapKey,
+    this.facilityId,
   });
 }
 
@@ -539,7 +572,14 @@ class _RecommendationItem {
 class _ExperienceItem {
   final String title;
   final String tag;
-  const _ExperienceItem({required this.title, required this.tag});
+  final String activityId; // For navigating to activity detail page
+  final String imageUrl; // Image for the experience card
+  const _ExperienceItem({
+    required this.title,
+    required this.tag,
+    required this.activityId,
+    required this.imageUrl,
+  });
 }
 
 // -----------------------------------------------------------------------------
@@ -717,31 +757,96 @@ class _ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Extract values safely
+    final imageUrl = item.imageUrl;
+    final title = item.title;
+    final tag = item.tag;
+    final activityId = item.activityId;
+
     return InkWell(
       borderRadius: BorderRadius.circular(16),
-      onTap: () => debugPrint('Experience tapped: ${item.title}'),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ActivityDetailPage(activityId: activityId),
+          ),
+        );
+      },
       child: Container(
-        decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Stack(
           children: [
+            // Background Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Builder(
+                builder: (context) {
+                  try {
+                    return Image.asset(
+                      imageUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        debugPrint('Error loading image: $imageUrl - $error');
+                        return Container(
+                          color: Colors.black,
+                          child: const Center(
+                            child: Icon(Icons.image, color: Colors.grey, size: 40),
+                          ),
+                        );
+                      },
+                    );
+                  } catch (e) {
+                    debugPrint('Exception loading image: $imageUrl - $e');
+                    return Container(
+                      color: Colors.black,
+                      child: const Center(
+                        child: Icon(Icons.image, color: Colors.grey, size: 40),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+            // Dark overlay for better text readability
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            // Category Badge
             Positioned(
               top: 10,
               left: 10,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(999)),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(999),
+                ),
                 child: Text(
-                  item.tag,
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: kGold),
+                  tag,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: kGold,
+                  ),
                 ),
               ),
             ),
+            // Title
             Positioned(
               left: 12,
               right: 12,
               bottom: 12,
               child: Text(
-                item.title,
+                title,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -757,44 +862,3 @@ class _ExperienceCard extends StatelessWidget {
   }
 }
 
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.label,
-    required this.icon,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final activeColor = isActive ? const Color(0xFF0D3B2E) : Colors.white.withOpacity(0.85);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: SizedBox(
-        width: 74,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: activeColor),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: activeColor,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

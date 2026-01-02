@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+// ✅ TEMPORARILY DISABLED: Auth imports removed for UI development
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import '../core/providers/auth_provider.dart';
 
 import 'signupP.dart';
-import 'sociallog.dart'; // <-- SocialConfirmPage file
-import 'homeP.dart'; // ✅ make sure this file name matches your GuestHomePage file
+import 'homeP.dart';
 
+// ✅ TEMPORARILY CHANGED: Back to StatefulWidget (no auth needed)
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -16,13 +14,14 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+// ✅ TEMPORARILY CHANGED: Back to State (no auth needed)
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _rememberMe = false;
-  bool _loadingSocial = false;
+  // ✅ REMOVED: _loadingSocial - now using authProvider.isLoading
 
   static const Color kGold = Color(0xFFC9A633);
 
@@ -35,6 +34,33 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ TEMPORARILY DISABLED: Auth logic disabled for UI development
+    // ref.listen<AuthState>(authProvider, (previous, next) {
+    //   // Handle errors
+    //   if (next.error != null && previous?.error != next.error) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text(next.error!)),
+    //     );
+    //   }
+
+    //   // Handle successful authentication - navigate to home
+    //   if (next.isAuthenticated && next.user != null && previous?.isAuthenticated != true) {
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (_) => HomePage(
+    //           displayName: next.displayName,
+    //           isGuest: false,
+    //           initialTabIndex: 0,
+    //         ),
+    //       ),
+    //     );
+    //   }
+    // });
+
+    // ✅ TEMPORARILY DISABLED: No auth state watching
+    // final authState = ref.watch(authProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F8F3),
       body: SafeArea(
@@ -81,11 +107,6 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 24),
 
                     _buildSocialLogin(),
-
-                    if (_loadingSocial) ...[
-                      const SizedBox(height: 18),
-                      const CircularProgressIndicator(),
-                    ],
                   ],
                 ),
               ),
@@ -96,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // ✅ TEMPORARILY DISABLED: No auth state needed
   Widget _buildLoginCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -166,6 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
+              // ✅ TEMPORARILY DISABLED: Just navigate to home
               onPressed: _onEmailLogin,
               child: const Text(
                 'Sign In',
@@ -203,6 +226,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // ✅ TEMPORARILY DISABLED: No auth state needed
   Widget _buildSocialLogin() {
     return Column(
       children: [
@@ -214,21 +238,31 @@ class _LoginPageState extends State<LoginPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _socialButton('assets/icons/googlelogo.png', _onGoogleLogin),
+            _socialButton(
+              'assets/icons/googlelogo.png',
+              _onGoogleLogin,
+            ),
             const SizedBox(width: 16),
-            _socialButton('assets/icons/applelogo.png', _onAppleLogin),
+            _socialButton(
+              'assets/icons/applelogo.png',
+              _onAppleLogin,
+            ),
             const SizedBox(width: 16),
-            _socialButton('assets/icons/fblogo.png', _onFacebookLogin),
+            _socialButton(
+              'assets/icons/fblogo.png',
+              _onFacebookLogin,
+            ),
           ],
         ),
       ],
     );
   }
 
+  // ✅ TEMPORARILY DISABLED: No loading state
   Widget _socialButton(String icon, VoidCallback onTap) {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
-      onTap: _loadingSocial ? null : onTap,
+      onTap: onTap,
       child: Container(
         height: 54,
         width: 54,
@@ -259,7 +293,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // ---------------------------------------------------------------------------
-  // ACTIONS
+  // ACTIONS - ✅ MIGRATED: Now using authProvider instead of direct Firebase calls
   // ---------------------------------------------------------------------------
 
   void _goToSignUp() {
@@ -269,264 +303,65 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // ✅ TEMPORARILY DISABLED: Just navigate to home for UI development
   Future<void> _onEmailLogin() async {
-    final email = _emailController.text.trim();
-    final pass = _passwordController.text.trim();
-
-    if (email.isEmpty || pass.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
-      return;
-    }
-
-    try {
-      final userCred = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: pass,
-      );
-
-      final user = userCred.user;
-      if (user == null || !mounted) return;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomePage(
-            displayName: user.displayName ?? user.email ?? 'User',
-            isGuest: false,
-            initialTabIndex: 0,
-          ),
+    // Skip authentication - just go to home
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const HomePage(
+          displayName: 'User',
+          isGuest: false,
+          initialTabIndex: 0,
         ),
-      );
-    } on FirebaseAuthException catch (e) {
-      String msg = 'Login failed';
-      if (e.code == 'user-not-found') msg = 'No account found for that email.';
-      if (e.code == 'wrong-password') msg = 'Wrong password.';
-      if (e.code == 'invalid-email') msg = 'Invalid email.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
-      );
-    }
+      ),
+    );
   }
 
-  void _onForgotPassword() {
-    // TODO: Firebase reset password
+  // ✅ TEMPORARILY DISABLED: Forgot password disabled
+  Future<void> _onForgotPassword() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Password reset temporarily disabled for UI development')),
+    );
   }
 
+  // ✅ TEMPORARILY DISABLED: Social logins just navigate to home
   Future<void> _onGoogleLogin() async {
-    try {
-      setState(() => _loadingSocial = true);
-
-      UserCredential userCred;
-
-      if (kIsWeb) {
-        // ✅ WEB Google login (Popup)
-        final googleProvider = GoogleAuthProvider()
-          ..addScope('email')
-          ..addScope('profile');
-
-        userCred = await FirebaseAuth.instance.signInWithPopup(googleProvider);
-      } else {
-        // ✅ ANDROID/iOS Google login (google_sign_in)
-        final googleUser = await GoogleSignIn().signIn();
-        if (googleUser == null) {
-          // user canceled
-          setState(() => _loadingSocial = false);
-          return;
-        }
-
-        final googleAuth = await googleUser.authentication;
-
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        userCred = await FirebaseAuth.instance.signInWithCredential(credential);
-      }
-
-      final user = userCred.user;
-
-      if (!mounted) return;
-
-      final displayName = user?.displayName ?? 'Guest';
-      final email = user?.email ?? 'No email';
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SocialConfirmPage(
-            displayName: displayName,
-            email: email,
-            providerLabel: 'Signing in with Google',
-            avatarText: _initials(displayName),
-            providerIconAsset: 'assets/icons/googlelogo.png',
-            onUseDifferentAccount: () async {
-              // Sign out from Firebase
-              await FirebaseAuth.instance.signOut();
-
-              // Also sign out from Google session (mobile)
-              if (!kIsWeb) {
-                await GoogleSignIn().signOut();
-              }
-
-              if (!mounted) return;
-              if (Navigator.canPop(context)) Navigator.pop(context);
-            },
-          ),
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const HomePage(
+          displayName: 'User',
+          isGuest: false,
+          initialTabIndex: 0,
         ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google sign-in failed: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _loadingSocial = false);
-    }
+      ),
+    );
   }
 
   Future<void> _onAppleLogin() async {
-    try {
-      setState(() => _loadingSocial = true);
-
-      // Check if Apple Sign-In is available on this device
-      final isAvailable = await SignInWithApple.isAvailable();
-
-      if (!isAvailable) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Apple Sign-In not available on this device')),
-        );
-        setState(() => _loadingSocial = false);
-        return;
-      }
-
-      // Get Apple credential
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      // Sign in with Firebase using Apple credential
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: credential.identityToken,
-      );
-
-      final userCred = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      final user = userCred.user;
-
-      if (!mounted) return;
-
-      final displayName = user?.displayName ?? credential.givenName ?? 'Apple User';
-      final email = user?.email ?? credential.email ?? 'No email';
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SocialConfirmPage(
-            displayName: displayName,
-            email: email,
-            providerLabel: 'Signing in with Apple',
-            avatarText: _initials(displayName),
-            providerIconAsset: 'assets/icons/applelogo.png',
-            onUseDifferentAccount: () async {
-              await FirebaseAuth.instance.signOut();
-              if (!mounted) return;
-              if (Navigator.canPop(context)) Navigator.pop(context);
-            },
-          ),
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const HomePage(
+          displayName: 'User',
+          isGuest: false,
+          initialTabIndex: 0,
         ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Apple sign-in failed: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _loadingSocial = false);
-    }
+      ),
+    );
   }
 
   Future<void> _onFacebookLogin() async {
-    try {
-      setState(() => _loadingSocial = true);
-
-      // Trigger the sign-in flow
-      final LoginResult result = await FacebookAuth.instance.login(
-        permissions: ['email', 'public_profile'],
-      );
-
-      if (result.status == LoginStatus.success) {
-        // Get access token
-        final AccessToken accessToken = result.accessToken!;
-
-        // Sign in with Firebase using Facebook credential
-        final credential = FacebookAuthProvider.credential(accessToken.tokenString);
-
-        final userCred = await FirebaseAuth.instance.signInWithCredential(credential);
-        final user = userCred.user;
-
-        // Also get Facebook user info
-        final userData = await FacebookAuth.instance.getUserData(
-          fields: "email,name,picture",
-        );
-
-        if (!mounted) return;
-
-        final displayName = user?.displayName ?? userData['name'] ?? 'Facebook User';
-        final email = user?.email ?? userData['email'] ?? 'No email';
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => SocialConfirmPage(
-              displayName: displayName,
-              email: email,
-              providerLabel: 'Signing in with Facebook',
-              avatarText: _initials(displayName),
-              providerIconAsset: 'assets/icons/fblogo.png',
-              onUseDifferentAccount: () async {
-                await FirebaseAuth.instance.signOut();
-                await FacebookAuth.instance.logOut();
-                if (!mounted) return;
-                if (Navigator.canPop(context)) Navigator.pop(context);
-              },
-            ),
-          ),
-        );
-      } else if (result.status == LoginStatus.cancelled) {
-        // User cancelled the login
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Facebook sign-in cancelled')),
-        );
-      } else {
-        // Error occurred
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Facebook sign-in failed: ${result.message}')),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Facebook sign-in error: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _loadingSocial = false);
-    }
-  }
-
-  String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
-    if (parts.isEmpty) return 'GU';
-    if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
-    return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const HomePage(
+          displayName: 'User',
+          isGuest: false,
+          initialTabIndex: 0,
+        ),
+      ),
+    );
   }
 }

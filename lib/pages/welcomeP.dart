@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'loginP.dart';
-import 'signupP.dart';
 import 'homeP.dart';
 
 class WelcomePage extends StatelessWidget {
@@ -59,14 +57,15 @@ class WelcomePage extends StatelessWidget {
                         const Spacer(),
 
                         // Buttons
+                        // ✅ TEMPORARILY DISABLED: All buttons go directly to home for UI development
                         _PrimaryButton(
                           label: 'Log In',
-                          onTap: () => _push(context, const LoginPage()),
+                          onTap: () => _replace(context, const HomePage()),
                         ),
                         const SizedBox(height: 14),
                         _PrimaryButton(
                           label: 'Sign Up',
-                          onTap: () => _push(context, const SignUpPage()),
+                          onTap: () => _replace(context, const HomePage()),
                         ),
                         const SizedBox(height: 14),
                         _OutlineButton(
@@ -84,13 +83,6 @@ class WelcomePage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  static void _push(BuildContext context, Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => page),
     );
   }
 

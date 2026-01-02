@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'firebase_options.dart';
 import 'pages/welcomeP.dart';
@@ -20,14 +21,19 @@ Future<void> main() async {
   // Stripe.publishableKey = "pk_test_xxxxxxxxxxxxxxxxxxxxx";
   // await Stripe.instance.applySettings();
 
-  runApp(const MyApp());
+  // ✅ Wrap app with ProviderScope for Riverpod state management
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Uppuveli By DSK',
