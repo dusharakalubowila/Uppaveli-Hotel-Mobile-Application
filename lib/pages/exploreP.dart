@@ -3,6 +3,7 @@ import 'spawellP.dart';
 import 'facilityDetailP.dart';
 import 'spaServiceDetailP.dart';
 import 'restaurantDetailP.dart';
+import 'roomServiceP.dart';
 import '../core/widgets/bottom_nav_bar.dart';
 
 class ExplorePage extends StatelessWidget {
@@ -565,8 +566,12 @@ class _DiningCard extends StatelessWidget {
       // Special Room Service card with gradient
       return InkWell(
         onTap: () {
-          debugPrint('Room Service tapped');
-          // TODO: Navigate to room service page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const RoomServicePage(),
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(12),
       child: Container(

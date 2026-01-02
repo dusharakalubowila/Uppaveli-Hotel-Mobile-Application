@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'payP.dart';
 
 class SpaBookingPage extends StatefulWidget {
   const SpaBookingPage({
@@ -646,11 +647,15 @@ class _SpaBookingPageState extends State<SpaBookingPage> {
       return;
     }
 
-    final date = _selectedDate!;
-    final msg =
-        "Booked ${widget.treatmentName}\nDate: ${date.day}/${date.month}/${date.year}\nTime: $_selectedTime\nTotal: ${_money(_total)}";
-
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    // Navigate to payment page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentMethodPage(
+          totalAmount: _total,
+        ),
+      ),
+    );
   }
 }
 

@@ -63,4 +63,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/Facilities/
+    - assets/images/Recommendation/
+    - assets/images/Popular/
     - assets/icons/

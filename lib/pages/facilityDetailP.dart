@@ -20,7 +20,7 @@ class FacilityDetailPage extends StatelessWidget {
       'id': 'fac-001',
       'name': 'Beach front Swimming pool',
       'hours': '7 AM - 9 PM ( Everyday )',
-      'imageUrl': 'assets/images/beach.png',
+      'imageUrl': 'assets/images/Facilities/pool.png',
       'description':
           'The beachfront swimming pool offers uninterrupted views of the ocean, allowing guests to relax just steps from the shoreline. Surrounded by sea breeze and open skies, it is an ideal spot for a refreshing swim, sunbathing, or enjoying the calm coastal atmosphere throughout the day.',
       'type': 'pool',
@@ -38,7 +38,7 @@ class FacilityDetailPage extends StatelessWidget {
       'id': 'fac-002',
       'name': 'GYM',
       'hours': '24 hrs ( Everyday )',
-      'imageUrl': 'assets/images/room.png',
+      'imageUrl': 'assets/images/Facilities/gym.png',
       'description':
           'Our gym is designed to support your fitness and well-being in a calm, comfortable setting. Equipped with essential workout facilities, it offers a convenient space to stay active, energized, and balanced during your stay at Uppuveli Beach by DSK.',
       'type': 'gym',
@@ -61,7 +61,7 @@ class FacilityDetailPage extends StatelessWidget {
       'id': 'fac-003',
       'name': 'Pool Bar',
       'hours': '2 PM - 5 PM ( Everyday )',
-      'imageUrl': 'assets/images/breeze.png',
+      'imageUrl': 'assets/images/Facilities/beachclub.png',
       'description':
           'The Pool Bar offers a relaxed atmosphere where guests can enjoy refreshing beverages, light meals, and stunning ocean views. Perfect for unwinding after a day at the beach or pool.',
       'type': 'dining',
@@ -92,7 +92,7 @@ class FacilityDetailPage extends StatelessWidget {
       'id': 'fac-004',
       'name': 'Thendral Bliss',
       'hours': '9 AM - 8 PM ( Everyday )',
-      'imageUrl': 'assets/images/beach.png',
+      'imageUrl': 'assets/images/Facilities/threndalBlissSpa.jpg',
       'description':
           'Thendral Bliss Spa offers a serene sanctuary for relaxation and rejuvenation. Experience traditional Ayurvedic treatments, therapeutic massages, and wellness therapies in a tranquil setting that harmonizes mind, body, and spirit.',
       'type': 'spa',
@@ -482,7 +482,7 @@ class FacilityDetailPage extends StatelessWidget {
 
   // ==================== MENU CARD ====================
   Widget _buildMenuCard(Map facility) {
-    final menu = facility['menu'] as Map<String, List<Map<String, dynamic>>>?;
+    final menu = facility['menu'] as Map<String, dynamic>?;
     if (menu == null || menu.isEmpty) return const SizedBox.shrink();
 
     return Container(
@@ -511,9 +511,11 @@ class FacilityDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ...menu.entries.map((category) {
-            if (category.value.isEmpty) return const SizedBox.shrink();
-
+          ...menu.entries.where((category) {
+            final items = category.value as List<dynamic>?;
+            return items != null && items.isNotEmpty;
+          }).map((category) {
+            final items = category.value as List<dynamic>;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -526,7 +528,8 @@ class FacilityDetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ...category.value.map((item) {
+                ...items.map((item) {
+                  final itemMap = item as Map<String, dynamic>;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 6),
                     child: Row(
@@ -534,7 +537,7 @@ class FacilityDetailPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            item['name'] as String,
+                            itemMap['name'] as String,
                             style: const TextStyle(
                               fontSize: 13,
                               color: kCharcoal,
@@ -542,7 +545,7 @@ class FacilityDetailPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Rs. ${item['price'].toStringAsFixed(2)}',
+                          'Rs. ${(itemMap['price'] as num).toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -552,11 +555,11 @@ class FacilityDetailPage extends StatelessWidget {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
                 const SizedBox(height: 16),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );

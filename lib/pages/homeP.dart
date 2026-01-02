@@ -74,36 +74,28 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
-  // ✅ Recommendation cards:
-  // - first 2 gradients match screenshot (Blue, Green)
-  // - 3rd uses GOLD GRADIENT top
+  // ✅ Recommendation cards with images
   final List<_RecommendationItem> _recommendations = const [
     _RecommendationItem(
-      title: 'Ocean View Villa',
-      subtitle: 'Uppuveli Beachfront – Rooms starting\nat \$79',
-      location: 'Uppuveli, Trincomalee',
+      title: 'Romantic Dinner at Beach',
+      subtitle: 'Uppaveli Beachfront - Rooms starting at \$79',
+      location: 'Uppaveli, Trincomalee',
       priceTag: 'From \$79',
-      style: _RecommendationStyle.gradient,
-      // ✅ BLUE like screenshot
-      topLeftColor: Color(0xFF00B2C7),
-      topRightColor: Color(0xFF246BDA),
+      imageUrl: 'assets/images/Recommendation/romantic.png',
     ),
     _RecommendationItem(
-      title: 'DSK Premium Suite',
-      subtitle: 'Luxurious comfort\nwith sea view',
-      location: 'Main Building',
+      title: 'Cooking tutorials with our chef',
+      subtitle: 'Luxurious comfort & private balcony with sea view',
+      location: 'Main Building, 3rd Floor',
       priceTag: 'From \$99',
-      style: _RecommendationStyle.gradient,
-      // ✅ GREEN like screenshot
-      topLeftColor: Color(0xFF18B36B),
-      topRightColor: Color(0xFF0E8B62),
+      imageUrl: 'assets/images/Recommendation/cookingtutorials.png',
     ),
     _RecommendationItem(
-      title: 'Family Garden Villa',
+      title: 'Trincomalee city tour',
       subtitle: 'Spacious 2-bedroom villa with private garden',
       location: 'Garden Wing',
       priceTag: 'From \$150',
-      style: _RecommendationStyle.goldTopOnly, // ✅ IMPORTANT
+      imageUrl: 'assets/images/Recommendation/trinco.png',
     ),
   ];
 
@@ -112,25 +104,25 @@ class _HomePageState extends State<HomePage> {
       title: 'Snorkeling at Pigeon\nIsland',
       tag: 'Snorkeling',
       activityId: 'snorkeling',
-      imageUrl: 'assets/images/beach.png',
+      imageUrl: 'assets/images/Popular/snokeling.jpg',
     ),
     _ExperienceItem(
       title: 'Cultural Tour –\nKoneswaram Temple',
       tag: 'Cultural Tour',
       activityId: 'cultural-tour',
-      imageUrl: 'assets/images/room.png',
+      imageUrl: 'assets/images/Popular/cultural.png',
     ),
     _ExperienceItem(
       title: 'Whale Watching',
       tag: 'Adventure',
       activityId: 'whale-watching',
-      imageUrl: 'assets/images/garden.png',
+      imageUrl: 'assets/images/Popular/whale.png',
     ),
     _ExperienceItem(
       title: 'Sunset Beach BBQ',
       tag: 'Dining',
       activityId: 'sunset-bbq',
-      imageUrl: 'assets/images/breeze.png',
+      imageUrl: 'assets/images/Popular/sunsetBeach.png',
     ),
   ];
 
@@ -544,28 +536,19 @@ class _FacilityItem {
   });
 }
 
-enum _RecommendationStyle { gradient, goldTopOnly }
-
 class _RecommendationItem {
   final String title;
   final String subtitle;
   final String location;
   final String priceTag;
-
-  final _RecommendationStyle style;
-
-  // for gradient cards
-  final Color? topLeftColor;
-  final Color? topRightColor;
+  final String imageUrl;
 
   const _RecommendationItem({
     required this.title,
     required this.subtitle,
     required this.location,
     required this.priceTag,
-    required this.style,
-    this.topLeftColor,
-    this.topRightColor,
+    required this.imageUrl,
   });
 }
 
@@ -663,44 +646,42 @@ class _RecommendationCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ TOP BLOCK: gradient (first 2), GOLD GRADIENT (3rd)
-            Container(
-              height: 150,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                gradient: item.style == _RecommendationStyle.goldTopOnly
-                    ? const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFFE1C15C), // light gold
-                          Color(0xFFB8962E), // dark gold
-                        ],
-                      )
-                    : LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          item.topLeftColor ?? const Color(0xFF00B2C7),
-                          item.topRightColor ?? const Color(0xFF2DC96D),
-                        ],
-                      ),
-              ),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  margin: const EdgeInsets.all(12),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    item.priceTag,
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            // ✅ TOP BLOCK: Image with price badge overlay
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: Image.asset(
+                    item.imageUrl,
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 150,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.image, color: Colors.grey),
+                      );
+                    },
                   ),
                 ),
-              ),
+                // Price badge overlay
+                Positioned(
+                  bottom: 12,
+                  right: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      item.priceTag,
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             // ✅ FIX: make bottom area fit so location never overflows
@@ -816,7 +797,7 @@ class _ExperienceCard extends StatelessWidget {
             // Dark overlay for better text readability
             Container(
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
             ),

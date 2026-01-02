@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'roomdetP.dart';
+import 'roomitem.dart';
 
 class AllRoomsPage extends StatelessWidget {
   const AllRoomsPage({super.key});
@@ -378,14 +380,34 @@ class AllRoomsPage extends StatelessWidget {
                   height: 40,
                   child: OutlinedButton(
                     onPressed: () {
-                      debugPrint('View Details tapped for: ${room['name']}');
-                      // TODO: Navigate to room detail page
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => RoomDetailPage(roomId: room['id']),
-                      //   ),
-                      // );
+                      // Convert map to RoomItem and navigate to room details
+                      final roomItem = RoomItem(
+                        name: room['name'] as String,
+                        imageAsset: room['imageUrl'] as String? ?? 'assets/images/beach.png',
+                        sqft: (room['sizeSqm'] as int?) ?? 45,
+                        guests: (room['maxGuests'] as int?) ?? 2,
+                        bedsLabel: room['bedType'] as String? ?? '1 King Bed',
+                        price: (room['price'] as int?) ?? 60000,
+                        points: 0, // Default points
+                        refundable: true, // Default refundable
+                      );
+                      
+                      // Use default dates (today and tomorrow) for browsing
+                      final checkIn = DateTime.now();
+                      final checkOut = checkIn.add(const Duration(days: 1));
+                      final guests = (room['maxGuests'] as int?) ?? 2;
+                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RoomDetailsPage(
+                            room: roomItem,
+                            checkIn: checkIn,
+                            checkOut: checkOut,
+                            guests: guests,
+                          ),
+                        ),
+                      );
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: kGold, width: 1.5),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'activityDetailP.dart';
+import 'payP.dart';
 
 class ActivityBookingPage extends StatefulWidget {
   final String activityId;
@@ -667,31 +668,15 @@ class _ActivityBookingPageState extends State<ActivityBookingPage> {
       return;
     }
 
-    // TODO: Navigate to payment page
-    debugPrint('Proceeding to payment for activity: ${activityData['name']}');
-    _showSuccess('Booking details saved. Payment page coming soon!');
-    
-    // Uncomment when payment page is ready:
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => PaymentPage(
-    //       bookingType: 'activity',
-    //       bookingData: {
-    //         'activityId': widget.activityId,
-    //         'activityName': activityData['name'],
-    //         'date': selectedDate,
-    //         'time': selectedTime,
-    //         'guests': numberOfGuests,
-    //         'specialRequests': specialRequestsController.text,
-    //         'contactName': nameController.text,
-    //         'contactEmail': emailController.text,
-    //         'contactPhone': phoneController.text,
-    //         'totalAmount': totalAmount,
-    //       },
-    //     ),
-    //   ),
-    // );
+    // Navigate to payment page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentMethodPage(
+          totalAmount: totalAmount,
+        ),
+      ),
+    );
   }
 
   void _showError(String message) {
@@ -701,17 +686,6 @@ class _ActivityBookingPageState extends State<ActivityBookingPage> {
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  void _showSuccess(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
       ),
     );
   }

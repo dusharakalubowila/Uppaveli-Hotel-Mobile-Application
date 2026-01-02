@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../core/widgets/bottom_nav_bar.dart';
 import 'loyaltyP.dart';
 import 'welcomeP.dart';
+import 'myBookingsP.dart';
+import 'editProfileP.dart';
+import 'privacyPolicyP.dart';
+import 'termsP.dart';
+import 'aboutP.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -258,16 +263,24 @@ class ProfilePage extends StatelessWidget {
           icon: Icons.person_outline,
           title: 'Edit Profile',
           onTap: () {
-            debugPrint('Edit Profile tapped');
-            // TODO: Navigate to edit profile page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const EditProfilePage(),
+              ),
+            );
           },
         ),
         _buildMenuItem(
           icon: Icons.book_outlined,
           title: 'My Bookings',
           onTap: () {
-            debugPrint('My Bookings tapped');
-            // TODO: Navigate to bookings page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MyBookingsPage(),
+              ),
+            );
           },
         ),
         _buildMenuItem(
@@ -320,24 +333,36 @@ class ProfilePage extends StatelessWidget {
           icon: Icons.info_outline,
           title: 'About',
           onTap: () {
-            debugPrint('About tapped');
-            // TODO: Show about dialog
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AboutPage(),
+              ),
+            );
           },
         ),
         _buildMenuItem(
           icon: Icons.privacy_tip_outlined,
           title: 'Privacy Policy',
           onTap: () {
-            debugPrint('Privacy Policy tapped');
-            // TODO: Navigate to privacy policy page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PrivacyPolicyPage(),
+              ),
+            );
           },
         ),
         _buildMenuItem(
           icon: Icons.description_outlined,
           title: 'Terms & Conditions',
           onTap: () {
-            debugPrint('Terms & Conditions tapped');
-            // TODO: Navigate to terms page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TermsPage(),
+              ),
+            );
           },
         ),
         const SizedBox(height: 16),

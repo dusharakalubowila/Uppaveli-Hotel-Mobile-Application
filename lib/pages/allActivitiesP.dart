@@ -29,7 +29,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
       'difficulty': 'Beginner',
       'price': 3500,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/beach.png',
+      'imageUrl': 'assets/images/Popular/snokeling.jpg',
       'description': 'Explore vibrant coral reefs at Pigeon Island National Park',
     },
     {
@@ -43,7 +43,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
       'difficulty': 'Easy',
       'price': 2500,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/room.png',
+      'imageUrl': 'assets/images/Popular/cultural.png',
       'description': 'Visit the ancient Koneswaram Temple on Swami Rock',
     },
     {
@@ -57,7 +57,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
       'difficulty': 'Moderate',
       'price': 8000,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/garden.png',
+      'imageUrl': 'assets/images/Popular/whale.png',
       'description': 'Witness majestic blue whales in their natural habitat',
     },
     {
@@ -71,7 +71,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
       'difficulty': 'Easy',
       'price': 5500,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/breeze.png',
+      'imageUrl': 'assets/images/Popular/sunsetBeach.png',
       'description': 'Enjoy grilled seafood and Sri Lankan specialties on the beach',
     },
     {
@@ -85,7 +85,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
       'difficulty': 'Moderate',
       'price': 4000,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/beach.png',
+      'imageUrl': 'assets/images/Popular/deepseafishing.jpg',
       'description': 'Paddle through calm coastal waters and mangroves',
     },
     {
@@ -99,7 +99,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
       'difficulty': 'Easy',
       'price': 2000,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/breeze.png',
+      'imageUrl': 'assets/images/Popular/cultural.png',
       'description': 'Explore the historic Dutch and Portuguese fortifications',
     },
   ];
@@ -409,4 +409,5 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     );
   }
 }
+
 

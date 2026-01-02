@@ -28,7 +28,7 @@ class ActivityDetailPage extends StatelessWidget {
       'difficultyColor': const Color(0xFF52B788), // Green
       'price': 3500,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/beach.png',
+      'imageUrl': 'assets/images/Popular/snokeling.jpg',
       'description':
           'Discover the underwater paradise of Pigeon Island National Park, just a short boat ride from Uppuveli Beach. This pristine marine sanctuary is home to vibrant coral reefs, colorful tropical fish, and even sea turtles.\n\nOur experienced guides will take you to the best snorkeling spots, where crystal-clear waters offer visibility up to 20 meters. Whether you\'re a beginner or experienced snorkeler, you\'ll be amazed by the diversity of marine life.\n\nThe tour includes all necessary equipment, safety briefing, and guidance throughout your underwater adventure. We also provide underwater photography services to capture your memorable moments.',
       'included': [
@@ -48,9 +48,9 @@ class ActivityDetailPage extends StatelessWidget {
       ],
       'availableTimes': ['8:00 AM', '10:00 AM', '2:00 PM', '4:00 PM'],
       'gallery': [
-        'assets/images/beach.png',
-        'assets/images/breeze.png',
-        'assets/images/garden.png',
+        'assets/images/Popular/snokeling.jpg',
+        'assets/images/Popular/whale.png',
+        'assets/images/Popular/cultural.png',
       ],
     },
     'cultural-tour': {
@@ -65,7 +65,7 @@ class ActivityDetailPage extends StatelessWidget {
       'difficultyColor': const Color(0xFF52B788),
       'price': 2500,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/room.png',
+      'imageUrl': 'assets/images/Popular/cultural.png',
       'description':
           'Experience the rich cultural heritage of Trincomalee with a guided tour of the ancient Koneswaram Temple, one of Sri Lanka\'s most sacred Hindu shrines perched dramatically on Swami Rock.\n\nBuilt over 2,000 years ago, this architectural marvel offers breathtaking views of the Indian Ocean and Trincomalee Harbor. Learn about the temple\'s fascinating history, destroyed by Portuguese colonizers and rebuilt in 1952.\n\nYour knowledgeable guide will explain the religious significance, architectural details, and local legends associated with this holy site. The tour includes visiting the sacred springs, the main shrine, and exploring the temple complex.',
       'included': [
@@ -83,8 +83,8 @@ class ActivityDetailPage extends StatelessWidget {
       ],
       'availableTimes': ['7:00 AM', '9:00 AM', '3:00 PM', '5:00 PM'],
       'gallery': [
-        'assets/images/beach.png',
-        'assets/images/breeze.png',
+        'assets/images/Popular/cultural.png',
+        'assets/images/Popular/snokeling.jpg',
       ],
     },
     'whale-watching': {
@@ -99,7 +99,7 @@ class ActivityDetailPage extends StatelessWidget {
       'difficultyColor': const Color(0xFFF4A261), // Orange
       'price': 8000,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/garden.png',
+      'imageUrl': 'assets/images/Popular/whale.png',
       'description':
           'Embark on an unforgettable ocean adventure to witness the majestic blue whales and playful dolphins in their natural habitat off the coast of Trincomalee.\n\nTrincomalee is one of the best places in the world to see blue whales, the largest animals on Earth. The season (March-August) offers high chances of sightings. You may also encounter sperm whales, spinner dolphins, and various seabirds.\n\nOur experienced crew knows the best spots and ensures a safe, comfortable journey. The boat is equipped with life jackets, first aid, and shaded seating. Marine biologists often accompany tours to provide fascinating insights about whale behavior.',
       'included': [
@@ -119,9 +119,8 @@ class ActivityDetailPage extends StatelessWidget {
       ],
       'availableTimes': ['6:00 AM', '6:30 AM'],
       'gallery': [
-        'assets/images/beach.png',
-        'assets/images/breeze.png',
-        'assets/images/room.png',
+        'assets/images/Popular/whale.png',
+        'assets/images/Popular/snokeling.jpg',
       ],
     },
     'sunset-bbq': {
@@ -136,7 +135,7 @@ class ActivityDetailPage extends StatelessWidget {
       'difficultyColor': const Color(0xFF52B788),
       'price': 5500,
       'priceUnit': 'per person',
-      'imageUrl': 'assets/images/breeze.png',
+      'imageUrl': 'assets/images/Popular/sunsetBeach.png',
       'description':
           'Enjoy a magical evening on Uppuveli Beach with our exclusive Sunset BBQ experience. Watch the sun dip below the horizon while savoring freshly grilled seafood and Sri Lankan specialties.\n\nOur beachfront setup features comfortable seating, ambient lighting, and live acoustic music. The menu includes grilled fish, prawns, chicken, vegetarian options, and traditional sides like coconut roti and dhal curry.\n\nThis intimate dining experience is perfect for couples, families, or small groups looking for a memorable evening by the ocean.',
       'included': [
@@ -155,8 +154,8 @@ class ActivityDetailPage extends StatelessWidget {
       ],
       'availableTimes': ['5:30 PM', '6:00 PM'],
       'gallery': [
-        'assets/images/beach.png',
-        'assets/images/garden.png',
+        'assets/images/Popular/sunsetBeach.png',
+        'assets/images/Popular/snokeling.jpg',
       ],
     },
   };

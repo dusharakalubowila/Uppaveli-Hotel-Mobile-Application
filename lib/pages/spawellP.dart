@@ -25,7 +25,7 @@ class _SpaWellnessPageState extends State<SpaWellnessPage>
       reviews: 128,
       description:
           "Traditional healing massage with warm oils and aromatherapy to restore balance and harmony.",
-      imageAsset: "assets/images/ayurvedic.jpg",
+      imageAsset: "assets/images/ayurvedic.png",
     ),
     SpaService(
       category: SpaCategory.facials,
@@ -47,7 +47,7 @@ class _SpaWellnessPageState extends State<SpaWellnessPage>
       reviews: 78,
       description:
           "Exfoliating treatment with fresh coconut and sea salt to reveal smooth, glowing skin.",
-      imageAsset: "assets/images/no.png",
+      imageAsset: "assets/images/body.png",
     ),
     SpaService(
       category: SpaCategory.massages,

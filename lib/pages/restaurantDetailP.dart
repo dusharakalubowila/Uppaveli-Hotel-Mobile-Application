@@ -543,3 +543,4 @@ class RestaurantDetailPage extends StatelessWidget {
   }
 }
 
+
